@@ -75,8 +75,8 @@ router.get('/timesheets/user-submission-frequency', verifyUser,adminOnly, getUse
 
 router.get('/timesheets/project-users-hours',verifyUser,adminOnly,  getUsersForProjectWithHours);
 
-router.get('/users/active-count', verifyUser,adminOnly, getTotalActiveUsers);
-router.get('/projects/active-count',  verifyUser,adminOnly,getTotalActiveProjects);
+router.get('/active-count', verifyUser,adminOnly, getTotalActiveUsers);
+router.get('/active-count-project',  verifyUser,adminOnly,getTotalActiveProjects);
 router.get('/projects/total-users',  verifyUser,adminOnly,getTotalUsersInProject);
 router.get('/dayoff-hourly-rates', verifyUser,adminOnly, getDayoffUsersWithRate);
 
