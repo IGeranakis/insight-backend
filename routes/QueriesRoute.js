@@ -28,7 +28,8 @@ import {
   getProjectBudget,
   getMonthlyCostsPerUser,
   getProjectUsersMonthlyHours, 
-  getProjectManagersWithProjects 
+  getProjectManagersWithProjects,
+  getUserExpectedVsSubmittedHours 
 } from "../controllers/Queries.js"
 
 import { verifyUser,adminOnly } from "../middleware/AuthUser.js";
@@ -72,6 +73,7 @@ router.get('/timesheets/previous-logged-hours', verifyUser,adminOnly, getPreviou
 router.get('/timesheets/project-duration', verifyUser,adminOnly, getAllProjectDurationsInPeriod);
 router.get('/timesheets/user-project-hours',  verifyUser,adminOnly,getUserProjectDurationsInPeriod);
 router.get('/timesheets/user-submission-frequency', verifyUser,adminOnly, getUserSubmissionFrequency);
+router.get('/timesheets/user-expected-vs-submitted-hours', verifyUser,adminOnly, getUserExpectedVsSubmittedHours);
 
 router.get('/timesheets/project-users-hours',verifyUser,adminOnly,  getUsersForProjectWithHours);
 
