@@ -1177,6 +1177,64 @@ export const getProjectManagersWithProjects = async (req, res) => {
   }
 };
 
+export const getUserExpectedVsSubmittedHours = async (req, res) => {
+  const { startdate, enddate } = req.query;
+
+  if (!startdate || !enddate) {
+    return res.status(400).json({ error: 'Missing startdate or enddate' });
+  }
+
+  try {
+    // 1. Get enabled users and their weekly_hours
+    const users = await runQuery(`
+      SELECT u.id AS user_id, u.alias, d.weekly_hours
+      FROM kimai2_users u
+      LEFT JOIN kimai2_daysoff d ON u.id = d.user_id
+      WHERE u.enabled = 1 AND u.alias != 'ADMINISTRATOR'
+    `);
+
+    // 2. Get total duration (in seconds) from timesheets in date range
+    const entries = await runQuery(`
+      SELECT 
+        user AS user_id,
+        SUM(TIMESTAMPDIFF(SECOND, start_time, end_time)) AS total_seconds
+      FROM kimai2_timesheet
+      WHERE DATE(start_time) BETWEEN ? AND ?
+      GROUP BY user
+    `, [startdate, enddate]);
+
+    // Map: user_id -> submitted hours
+    const submittedMap = {};
+    entries.forEach(entry => {
+      submittedMap[entry.user_id] = (entry.total_seconds || 0) / 3600; // convert to hours
+    });
+
+    // 3. Calculate number of weeks (rounded to 2 decimal places)
+    const start = new Date(startdate);
+    const end = new Date(enddate);
+    const daysInRange = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    const weeksInRange = +(daysInRange / 7).toFixed(2);
+
+    // 4. Build result per user
+    const result = users.map(user => {
+      const expected = user.weekly_hours ? +(user.weekly_hours * weeksInRange).toFixed(2) : null;
+      const submitted = +(submittedMap[user.user_id] || 0).toFixed(2);
+      return {
+        username: user.alias,
+        expected_hours: expected,
+        submitted_hours: submitted,
+        missing_hours: expected !== null ? +(expected - submitted).toFixed(2) : null
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error calculating expected vs submitted hours:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 
 
 

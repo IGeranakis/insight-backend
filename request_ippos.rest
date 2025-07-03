@@ -766,6 +766,15 @@ Content-Type: application/json
     "password":"123456"
   
 }
+### //Login user
+POST  http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "email":"admin@gmail.com",
+    "password":"123456"
+  
+}
 
 ### //GET YPO by Id
 GET https://api.cashflow.cmtprooptiki.gr:4002/ypoquery
@@ -832,6 +841,13 @@ Content-Type: application/json
   "hourly_rate": 45.5
 }
  
- #############
- #####get
-GET https://api.insight.cmtprooptiki.gr:5005/users/active-count?startdate=2022-01-01&enddate=2025-05-01
+#############
+GET https://api.insight.cmtprooptiki.gr:5005/active-count?startdate=2022-01-01&enddate=2025-05-01
+
+
+#############
+GET https://api.insight.cmtprooptiki.gr:5005/active-count-project?startdate=2022-01-01&enddate=2025-05-01
+
+
+##############
+GET http://localhost:5000/timesheets/user-expected-vs-submitted-hours?startdate=2025-01-01&enddate=2025-05-01
